@@ -1,0 +1,25 @@
+---
+- hosts: all
+  tasks:
+    - name: Copy pcap file from ControlNode
+      fetch:
+        src: /home/gonzales/Desktop/hoa8.pcap
+        dest: /home/gonzales/HOA8.1/
+        flat: yes
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Extract executable file
+      command: tcpflow -r /home/gonzales/HOA8.1/hoa8.pcap -o /home/gonzales/HOA8.1
+      args:
+        creates: /home/gonzales/HOA8.1/executable.exe
+
+    - name: Debug.exe file
+      command: cat /home/gonzales/HOA8.1/report.xml
+      register: cat_output
+      changed_when: false
+ 
+    - debug:
+        var: cat_output.stdout_lines
